@@ -1,0 +1,34 @@
+a:hover,
+#sidebar #popular_posts li a:hover,
+#sidebar ul li a:hover{
+    color: #e67517;
+}
+#menu li.current_page_item a,#menu li.current-menu-item a, #menu li.current-menu-parent a, #menu li.current_page_parent a, #menu li a.selected, #menu li a:hover{
+    background: #e67517;
+}
+#slider_wrapper,
+#crumbs_wrapper,
+#footer_bottom{
+    background: #7c3505 url('images/bg-strip-orange.png') repeat-y center;
+}
+#footer_wrapper{
+    background-color: #fde9d9;
+}
+#footer_wrapper .footer_widget .footer_title{
+    border-bottom: 1px solid #f0c5a2;
+}
+.top-strip{
+    background: url('images/top-strip-orange.png') repeat-x;
+}
+.bottom-strip{
+    background: url('images/bottom-strip-orange.png') repeat-x;
+}
+.footer_strip{
+    background: url('images/footer-strip-orange.png') repeat-x;
+}
+#slider_wrapper .entry h1.entry_heading{
+    color: #fad9be;
+}
+#slider_wrapper .entry h4.entry_content{
+    color: #fad9be;
+}

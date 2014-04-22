@@ -1,0 +1,20 @@
+.nofity,.user_email_error,.error{
+    color: red;
+}
+.im_log_form{
+    position: relative;
+    background-color: #fff;
+    padding: 15px;
+    -moz-box-shadow:    inset 0 0 10px #ccc;
+    -webkit-box-shadow: inset 0 0 10px #ccc;
+    box-shadow:         inset 0 0 10px #ccc;
+}
+.im_log_form .close{
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    display: block;
+    background: url('../images/close.png') no-repeat;
+    width: 32px;
+    height: 32px;
+}

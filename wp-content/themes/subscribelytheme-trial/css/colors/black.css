@@ -1,0 +1,9 @@
+#menu li.current_page_item a,#menu li.current-menu-item a, #menu li.current-menu-parent a, #menu li.current_page_parent a, #menu li a.selected, #menu li a:hover{
+    background: #47505d;
+}
+#footer_wrapper{
+    background-color: #eaeef2;
+}
+#footer_wrapper .footer_widget .footer_title{
+    border-bottom: 1px solid #d2d6da;
+}
