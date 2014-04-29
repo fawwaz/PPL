@@ -21,13 +21,17 @@ class NamasteLMSCoursesController {
 		}	
 		
 		if(!empty($_POST['enroll'])) $mesage = self::enroll($is_manager);
+
+		// filters from other plugins like Namaste! PRO		
+		$filter_sql = '';
+		$filter_sql = apply_filters('namaste-course-select-sql', $filter_sql, $user_ID);
 		
 		// select all courses join to student courses so we can have status.
 		$courses = $wpdb -> get_results($wpdb->prepare("SELECT tSC.*, 
 			tC.post_title as post_title, tC.ID as post_id, tC.post_excerpt as post_excerpt
 			 FROM {$wpdb->posts} tC LEFT JOIN ".NAMASTE_STUDENT_COURSES." tSC ON tC.ID = tSC.course_id
 			 AND tSC.user_id = %d WHERE tC.post_status = 'publish'
-			 AND tC.post_type='namaste_course' ORDER BY tC.post_title", $user_ID));
+			 AND tC.post_type='namaste_course' $filter_sql ORDER BY tC.post_title", $user_ID));
 			 
 		if(!empty($currency) and !$is_manager) {
 			foreach($courses as $cnt=>$course) {
@@ -42,31 +46,6 @@ class NamasteLMSCoursesController {
 		$_course->stripe = $stripe;		
 		wp_enqueue_script('thickbox',null,array('jquery'));
 		wp_enqueue_style('thickbox.css', '/'.WPINC.'/js/thickbox/thickbox.css', null, '1.0');	 
-		
-		foreach($courses as $cnt => $course) {
-			// can enroll? or are there unsatisfied pre-requisites
-			$can_enroll = true;		
-			$enroll_prerequisites = '';
-			// check for course access requirements
-			$course_access = get_post_meta($course->post_id, 'namaste_access', true);
-			if(!empty($course_access) and is_array($course_access)) {
-				$enroll_prerequisites = __('These courses should be completed before you can enroll:', 'namaste');
-				
-				// check if there is any unsatisfied requirement
-				foreach($course_access as $required_course) {
-					$is_completed = $wpdb->get_var($wpdb->prepare("SELECT id FROM ".NAMASTE_STUDENT_COURSES."
-						WHERE user_id=%d AND course_id=%d AND status='completed'", $user_ID, $required_course));
-					if(!$is_completed) {
-						$can_enroll = false; // even one failed is enough;
-						$required_course_post = get_post($required_course);
-						$enroll_prerequisites .= ' <b>' . $required_course_post->post_title. '</b>;';
-					}
-				} // end foreach course access
-			}
-			
-			$courses[$cnt]->can_enroll = $can_enroll;
-			$courses[$cnt]->enroll_prerequisites = $enroll_prerequisites;
-		}
 		
 		require(NAMASTE_PATH."/views/my_courses.php");	 
 	}
