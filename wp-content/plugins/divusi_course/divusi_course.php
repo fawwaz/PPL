@@ -31,13 +31,46 @@ TODO LIST
 *
 */
 
+
+
 define ( 'DIVUSI_PLUGIN_URL', plugin_dir_url(__FILE__)); // with forward slash (/).
 
-function divusi_course_wpmut_plugin_menu(){
-	add_menu_page( 'Payment_menu', 'Payment_menu', 'read', 'payment-menu', 'divusi_course_wpmut_plugin_page' );
+
+/**
+* Fungsi fungsi selama aktivasi ()
+*
+*/
+//===============================================================
+register_activation_hook( __FILE__, 'divusi_course_activate' );
+register_deactivation_hook(__FILE__, 'divusi_course_deactivate' );
+
+function divusi_course_activate(){    
+    $premium = add_role('premium_member','Premium member',array(
+                            'upload_files'=>true,
+                            'read'=>true
+                        ));
+    if($premium!==null){
+        $role = get_role('administrator');
+        $role->add_cap('payment_menu');
+    }
 }
 
+function divusi_course_deactivate(){
+    remove_role('premium_member');
+}
+
+
+
+
+
 add_action('admin_menu', 'divusi_course_wpmut_plugin_menu');
+
+function divusi_course_wpmut_plugin_menu(){
+    add_menu_page( 'Payment_menu', 'Payment menu', 'read', 'payment-menu', 'divusi_course_wpmut_plugin_page' );
+}
+
+
+
 	
 function divusi_course_wpmut_admin_scripts() 
 {
@@ -96,18 +129,13 @@ add_action('admin_print_styles', 'divusi_course_wpmut_admin_styles');
 			
 		</table>
 		
-		
+
+
 		<?php
 		echo "</div>";
  
  
  }
-
-
-
-
-
-
 
 
 
@@ -223,7 +251,7 @@ function register_taxonomy_divusi_course() {
 **/
 
 
-function my_admin() {
+function divusi_materi_meta_box() {
 	add_meta_box( 'divusi_materi_meta_box',
 		'Konten Berbayar',
 		'display_divusi_materi_meta_box',
@@ -263,7 +291,7 @@ function add_divusi_lesson_fields( $divusi_materi_id, $divusi_materi ) {
 
 
 add_action( 'save_post', 'add_divusi_lesson_fields', 10, 2 );
-add_action( 'admin_init', 'my_admin' );	
+add_action( 'admin_init', 'divusi_materi_meta_box' );	
 
 /**
 * ROLE MANAGEMENT
@@ -275,18 +303,6 @@ add_action( 'admin_init', 'my_admin' );
 *
 */
 
-function add_premium_role(){
-	$premium = add_role('Premium member','Premium member',array(
-						'read'=>true
-						));
-	if($premium!==null){
-		$role = get_role('administrator');
-		$role->add_cap('payment_menu');
-		// cek lagi tutorial nya beneran gak kaya gini liat salah satu nya deh
-	}
-}
-
-add_action('admin_init','add_premium_role');
 
 
 
@@ -500,4 +516,8 @@ class Payment_List_Table extends WP_List_Table{
 
 
 }
+
+
+
+
 

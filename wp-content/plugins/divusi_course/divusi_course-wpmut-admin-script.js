@@ -31,6 +31,7 @@ jQuery(document).ready(function() {
  
     window.original_send_to_editor = window.send_to_editor;
     window.send_to_editor = function(html){
+        alert(html);
         if (formfield) {
             fileurl = jQuery('img',html).attr('src');
             jQuery(formfield).val(fileurl);

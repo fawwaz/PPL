@@ -3,6 +3,8 @@
 	<title></title>
 </head>
 <body>
-hello world
+	<div class="hello">
+		<?php the_title(); ?>
+	</div>
 </body>
 </html>
