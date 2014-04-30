@@ -69,32 +69,6 @@ function divusi_course_wpmut_plugin_menu(){
     add_menu_page( 'Payment_menu', 'Payment menu', 'read', 'payment-menu', 'divusi_course_wpmut_plugin_page' );
 }
 
-
-
-	
-function divusi_course_wpmut_admin_scripts() 
-{
- if (isset($_GET['page']) && $_GET['page'] == 'payment-menu')
-	 {
-		 wp_enqueue_script('jquery');
-		 wp_enqueue_script('media-upload');
-		 wp_enqueue_script('thickbox');
-		 wp_register_script('my_script_upload', DIVUSI_PLUGIN_URL.'divusi_course-wpmut-admin-script.js', array('jquery','media-upload','thickbox'));
-		 wp_enqueue_script('my_script_upload');
-	 }
-}
-
-function divusi_course_wpmut_admin_styles()
-{
- if (isset($_GET['page']) && $_GET['page'] == 'payment-menu')
-	 {
-		 wp_enqueue_style('thickbox');
-	 }
-}
-add_action('admin_print_scripts', 'divusi_course_wpmut_admin_scripts');
-add_action('admin_print_styles', 'divusi_course_wpmut_admin_styles');
- 
- 
  function divusi_course_wpmut_plugin_page()
  {
  		echo '<div class="wrap">';
@@ -136,6 +110,32 @@ add_action('admin_print_styles', 'divusi_course_wpmut_admin_styles');
  
  
  }
+
+
+    
+function divusi_course_wpmut_admin_scripts() 
+{
+ if (isset($_GET['page']) && $_GET['page'] == 'payment-menu')
+     {
+         wp_enqueue_script('jquery');
+         wp_enqueue_script('media-upload');
+         wp_enqueue_script('thickbox');
+         wp_register_script('my_script_upload', DIVUSI_PLUGIN_URL.'divusi_course-wpmut-admin-script.js', array('jquery','media-upload','thickbox'));
+         wp_enqueue_script('my_script_upload');
+     }
+}
+
+function divusi_course_wpmut_admin_styles()
+{
+ if (isset($_GET['page']) && $_GET['page'] == 'payment-menu')
+     {
+         wp_enqueue_style('thickbox');
+     }
+}
+add_action('admin_print_scripts', 'divusi_course_wpmut_admin_scripts');
+add_action('admin_print_styles', 'divusi_course_wpmut_admin_styles');
+ 
+ 
 
 
 
@@ -357,8 +357,23 @@ class Divusi_payment{
 	}
 
 	public function payment_table_page(){
-		$Payment_table = new Payment_List_Table();
-        $Payment_table->prepare_items();
+        if($_GET['action']=='perpanjang'){
+            $user_id        = $_GET['user_id'];
+            $tgl_pembayaran = $_GET['tgl_pembayaran'];
+            $tgl_baru       = date('Y-m-d H:i:s',strtotime('+1 month'));
+
+
+            if(get_user_meta( $user_id, 'active_untill',true)!=''){
+                update_usermeta($user_id,'active_untill',$tgl_baru);
+            }else{
+                add_usermeta($user_id,'active_untill',$tgl_baru);
+            }
+
+
+            echo "ini diperpanjang lho do here usernamenya yang akan diperpanjang".$username.'tgl_baru'.$tgl_baru;
+        }else{
+    		$Payment_table = new Payment_List_Table();
+            $Payment_table->prepare_items();
         ?>
             <div class="wrap">
                 <div id="icon-users" class="icon32"></div>
@@ -366,6 +381,7 @@ class Divusi_payment{
                 <?php $Payment_table->display(); ?>
             </div>
         <?php
+        }
 	}
 
 }
@@ -404,10 +420,12 @@ class Payment_List_Table extends WP_List_Table{
     {
         $columns = array(
 			'id'                 => 'ID',
+            'user_id'            => 'User_id',
 			'username'           => 'username',
 			'tanggal pembayaran' => 'Tanggal Pembayaran',
 			'bukti pembayaran'   => 'Bukti pembayaran',
-			'status konfirmasi'  => 'Status Konfirmasi'
+			'status konfirmasi'  => 'Status Konfirmasi',
+            'aktifkan'           => 'Aktifkan'
         );
 
         return $columns;
@@ -415,7 +433,7 @@ class Payment_List_Table extends WP_List_Table{
 
     public function get_hidden_columns()
     {
-        return array();
+        return array('user_id');
     }
 
     public function get_sortable_columns()
@@ -432,6 +450,7 @@ class Payment_List_Table extends WP_List_Table{
 
         $data[] = array(
         	'id'                 =>1,
+            'user_id'            => 1,
 			'username'           =>'aku',
 			'tanggal pembayaran' =>'2014-09-06',
 			'bukti pembayaran'   =>'http://localhost/ppl/wp-content/uploads/2014/04/analisis-keuangan.jpg',
@@ -440,7 +459,8 @@ class Payment_List_Table extends WP_List_Table{
 
 		
 		$data[] = array(
-        	'id'                 =>2,
+        	'id'                 => 2,
+            'user_id'            => 2,
 			'username'           =>'aku',
 			'tanggal pembayaran' =>'2014-09-06',
 			'bukti pembayaran'   =>'<img>C:/xampp/htdocs/dokter/b.jpg</img>',
@@ -449,6 +469,7 @@ class Payment_List_Table extends WP_List_Table{
         
         $data[] = array(
         	'id'                 =>3,
+            'user_id'            => 2,
 			'username'           =>'admin aja',
 			'tanggal pembayaran' =>'2014-09-06',
 			'bukti pembayaran'   =>'C:/xampp/htdocs/dokter/c.jpg',
@@ -457,6 +478,7 @@ class Payment_List_Table extends WP_List_Table{
 
         $data[] = array(
         	'id'                 =>4,
+            'user_id'            => 2,
 			'username'           =>'akunp2',
 			'tanggal pembayaran' =>'2014-09-06',
 			'bukti pembayaran'   =>'C:/xampp/htdocs/dokter/d.jpg',
@@ -481,6 +503,8 @@ class Payment_List_Table extends WP_List_Table{
                 return $item[ $column_name ];
             case 'bukti pembayaran':
             	return '<img class="attachment-80x60" width="80" height="60" src="'.$item[$column_name].'">';
+            case 'aktifkan':
+                return sprintf('<a href="?page=%s&action=%s&tgl_pembayaran=%s&user_id=%s">Perpanjang Massa Aktif Akun!</a>',$_REQUEST['page'],'perpanjang',$item['tanggal pembayaran'],$item['user_id']);
             default:
                 return print_r( $item, true ) ;
         }
@@ -490,7 +514,7 @@ class Payment_List_Table extends WP_List_Table{
     {
         // Set defaults
         $orderby = 'tanggal pembayaran';
-        $order = 'asc';
+        $order = 'desc';
 
         // If orderby is set, use this as the sort column
         if(!empty($_GET['orderby']))
@@ -519,5 +543,280 @@ class Payment_List_Table extends WP_List_Table{
 
 
 
+/**
+*
+*
+*
+*/
+//============================
+
+/**
+* SUGGESTION COURSE
+*
+*
+*/
+
+add_filter('the_content','suggestion_module');
+
+function suggestion_module($content){
+    // $id = get_the_id();
+    // if(!is_singular()){
+    //     return $content;
+    // }
+    // $terms = get_the_terms($id,'category');
+    // $cats = array();
+
+    // foreach ($terms as $term) {
+    //     $cats[] = $term->ID;
+    // }
+
+    // $loop = new WP_Query(
+    //     array(
+    //         'posts_per_page' =>3,
+    //         'category_in' =>$cats
+    //         )
+    //     );
+
+    // if($loop->have_post()){
+    //     $content.='Coba juga tutorial ini :';
+    //     $content.='<ul class="related-category-posts">';
+
+    //     while($loop->have_posts()){
+    //         $loop->the_post();
+    //         $content.=  '<li>'.
+    //                     '<a href="'.get_permalink().'">'.get_the_title( ).'</a>'
+    //                     .'</li>';
+    //     }
+    //     $content.="</ul>";
+    //     wp_reset_query();
+    // }
+    // return $content;
+
+    $custom_taxterms = wp_get_object_terms( get_the_id(), 'divusi_course');    
+    
+    // arguments
+    $args = array(
+    'post_type' => 'divusi_materi',
+    'post_status' => 'publish',
+    'posts_per_page' => 3, // you may edit this number
+    'orderby' => 'rand',
+    'tax_query' => array(
+        array(
+            'taxonomy' => 'divusi_course',
+            'field' => 'id',
+            'terms' => $custom_taxterms[0]->term_id
+        )
+    ),
+    'post__not_in' => array (get_the_id()),
+    );
+    $related_items = new WP_Query( $args );
+    // loop over query
+    if ($related_items->have_posts()) :
+    echo '<ul>';
+    while ( $related_items->have_posts() ) : $related_items->the_post();
+    ?>
+        <li><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></li>
+    <?php
+    endwhile;
+    echo '</ul>';
+    endif;
+    // Reset Post Data
+    wp_reset_postdata();
+    return $content;
+}
+
+/**
+*
+* TUTORIAL
+*
+*/
+//=======================================
 
 
+function wptuts_get_default_options() {
+    $options = array(
+        'logo' => ''
+    );
+    return $options;
+}
+
+
+function wptuts_options_init() {
+     $wptuts_options = get_option( 'theme_wptuts_options' );
+     
+     // Are our options saved in the DB?
+     if ( false === $wptuts_options ) {
+          // If not, we'll save our default options
+          $wptuts_options = wptuts_get_default_options();
+          add_option( 'theme_wptuts_options', $wptuts_options );
+     }
+     
+     // In other case we don't need to update the DB
+}
+// Initialize Theme options
+add_action( 'after_setup_theme', 'wptuts_options_init' );
+
+function wptuts_options_setup() {
+    global $pagenow;
+    if ('media-upload.php' == $pagenow || 'async-upload.php' == $pagenow) {
+        // Now we'll replace the 'Insert into Post Button inside Thickbox' 
+        add_filter( 'gettext', 'replace_thickbox_text' , 1, 2 );
+    }
+}
+add_action( 'admin_init', 'wptuts_options_setup' );
+
+function replace_thickbox_text($translated_text, $text ) {  
+    if ( 'Insert into Post' == $text ) {
+        $referer = strpos( wp_get_referer(), 'wptuts-settings' );
+        if ( $referer != '' ) {
+            return __('I want this to be my logo!', 'wptuts' );
+        }
+    }
+
+    return $translated_text;
+}
+
+// Add "WPTuts Options" link to the "Appearance" menu
+function wptuts_menu_options() {
+    //add_theme_page( $page_title, $menu_title, $capability, $menu_slug, $function);
+     add_theme_page('Promosi', 'Promosi', 'read', 'wptuts-settings', 'wptuts_admin_options_page');
+}
+// Load the Admin Options page
+add_action('admin_menu', 'wptuts_menu_options');
+
+function wptuts_admin_options_page() {
+    ?>
+        <!-- 'wrap','submit','icon32','button-primary' and 'button-secondary' are classes 
+        for a good WP Admin Panel viewing and are predefined by WP CSS -->
+        
+        
+        
+        <div class="wrap">
+            
+            <div id="icon-themes" class="icon32"><br /></div>
+        
+            <h2><?php _e( 'Promosi bulan ini', 'Promosi' ); ?></h2>
+            
+            <!-- If we have any error by submiting the form, they will appear here -->
+            <?php settings_errors( 'wptuts-settings-errors' ); ?>
+            
+            <form id="form-wptuts-options" action="options.php" method="post" enctype="multipart/form-data">
+            
+                <?php
+                    settings_fields('theme_wptuts_options');
+                    do_settings_sections('wptuts');
+                ?>
+            
+                <p class="submit">
+                <?php if(current_user_can('view-stats')){?>
+                    <input name="theme_wptuts_options[submit]" id="submit_options_form" type="submit" class="button-primary" value="<?php esc_attr_e('Save Settings', 'wptuts'); ?>" />
+                    <input name="theme_wptuts_options[reset]" type="submit" class="button-secondary" value="<?php esc_attr_e('Reset Defaults', 'wptuts'); ?>" />        
+                <?php }?>
+                </p>
+            
+            </form>
+            
+        </div>
+    <?php
+}
+
+function wptuts_options_validate( $input ) {
+    $default_options = wptuts_get_default_options();
+    $valid_input = $default_options;
+    
+    $wptuts_options = get_option('theme_wptuts_options');
+    
+    $submit = ! empty($input['submit']) ? true : false;
+    $reset = ! empty($input['reset']) ? true : false;
+    $delete_logo = ! empty($input['delete_logo']) ? true : false;
+    
+    if ( $submit ) {
+        if ( $wptuts_options['logo'] != $input['logo']  && $wptuts_options['logo'] != '' )
+            delete_image( $wptuts_options['logo'] );
+        
+        $valid_input['logo'] = $input['logo'];
+    }
+    elseif ( $reset ) {
+        delete_image( $wptuts_options['logo'] );
+        $valid_input['logo'] = $default_options['logo'];
+    }
+    elseif ( $delete_logo ) {
+        delete_image( $wptuts_options['logo'] );
+        $valid_input['logo'] = '';
+    }
+    
+    return $valid_input;
+}
+
+function delete_image( $image_url ) {
+    global $wpdb;
+    
+    // We need to get the image's meta ID..
+    $query = "SELECT ID FROM wp_posts where guid = '" . esc_url($image_url) . "' AND post_type = 'attachment'";  
+    $results = $wpdb -> get_results($query);
+
+    // And delete them (if more than one attachment is in the Library
+    foreach ( $results as $row ) {
+        wp_delete_attachment( $row -> ID );
+    }   
+}
+
+/********************* JAVASCRIPT ******************************/
+function wptuts_options_enqueue_scripts() {
+        wp_register_script( 'wptuts-upload', DIVUSI_PLUGIN_URL .'/js/wptuts-upload.js', array('jquery','media-upload','thickbox') );      
+        if ( 'appearance_page_wptuts-settings' == get_current_screen() -> id ) {
+            wp_enqueue_script('jquery');
+            
+            wp_enqueue_script('thickbox');
+            wp_enqueue_style('thickbox');
+            
+            wp_enqueue_script('media-upload');
+            wp_enqueue_script('wptuts-upload');
+            
+        }
+    
+}
+add_action('admin_enqueue_scripts', 'wptuts_options_enqueue_scripts');
+
+
+function wptuts_options_settings_init() {
+    register_setting( 'theme_wptuts_options', 'theme_wptuts_options', 'wptuts_options_validate' );
+    
+    // Add a form section for the Logo
+    add_settings_section('wptuts_settings_header', __( 'Logo Options', 'wptuts' ), 'wptuts_settings_header_text', 'wptuts');
+    
+    if(current_user_can('view-stats' )){
+        // Add Logo uploader
+        add_settings_field('wptuts_setting_logo',  __( 'Logo', 'wptuts' ), 'wptuts_setting_logo', 'wptuts', 'wptuts_settings_header');
+    }    
+        // Add Current Image Preview 
+        add_settings_field('wptuts_setting_logo_preview',  __( 'Promo :', 'wptuts' ), 'wptuts_setting_logo_preview', 'wptuts', 'wptuts_settings_header');
+}   
+add_action( 'admin_init', 'wptuts_options_settings_init' );
+
+function wptuts_setting_logo_preview() {
+    $wptuts_options = get_option( 'theme_wptuts_options' );  ?>
+    <div id="upload_logo_preview" style="min-height: 100px;">
+        <img style="max-width:100%;" src="<?php echo esc_url( $wptuts_options['logo'] ); ?>" />
+    </div>
+    <?php
+}
+
+function wptuts_settings_header_text() {
+    ?>
+        <p><?php _e( 'Berikut promo bulan ini ', 'wptuts' ); ?></p>
+    <?php
+}
+
+function wptuts_setting_logo() {
+    $wptuts_options = get_option( 'theme_wptuts_options' );
+    if(current_user_can('view-stats' )){
+    ?>
+        <input type="hidden" id="logo_url" name="theme_wptuts_options[logo]" value="<?php echo esc_url( $wptuts_options['logo'] ); ?>" />
+        <input id="upload_logo_button" type="button" class="button" value="<?php _e( 'Upload Logo', 'wptuts' ); ?>" />
+        <?php if ( '' != $wptuts_options['logo'] ): ?>
+            <input id="delete_logo_button" name="theme_wptuts_options[delete_logo]" type="submit" class="button" value="<?php _e( 'Delete Logo', 'wptuts' ); ?>" />
+        <?php endif; ?>
+        <span class="description"><?php _e('Upload an image for the banner.', 'wptuts' ); ?></span>
+    <?php }
+}
