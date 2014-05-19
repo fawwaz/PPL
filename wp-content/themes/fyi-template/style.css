@@ -13,3 +13,11 @@ Text Domain: twentyfourteen
 This theme, like WordPress, is licensed under the GPL.
 Use it to make something cool, have fun, and share what you've learned with others.
 */
+
+@import url("css/reset.css");
+@import url("css/master.css");
+@import url("css/ie.css");
+
+.div_guwe{
+	background-color: red;
+}
