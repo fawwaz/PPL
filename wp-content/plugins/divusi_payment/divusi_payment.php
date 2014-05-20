@@ -52,8 +52,6 @@ function render_divusi_payment_dashboard_menu(){
 		$waktu_bayar    = $_POST['waktu_bayar'];
 		// handle file processing here
 		$bukti_transfer = $_FILES['bukti_transfer'];
-		echo "isi dari dikirim:" .$tgl_lahir . $waktu_bayar;
-		var_dump($bukti_transfer);
 	}
 	
 
@@ -227,3 +225,13 @@ function divusi_payment() {
 }
 
 add_action( 'init', 'divusi_payment' );
+
+
+
+/**
+
+* Terkait dengan registrasi user
+*
+*
+*/
+
