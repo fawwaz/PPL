@@ -200,7 +200,7 @@ class NamasteLMS {
    
    // main menu
    static function menu() {
-		$namaste_cap = current_user_can('namaste_manage') ? 'namaste_manage' : 'namaste';   	
+		$namaste_cap = current_user_can('namaste_manage')?'namaste_manage':'namaste';   	
 		$use_grading_system = get_option('namaste_use_grading_system');
    	
    	$menu=add_menu_page(__('Namaste! LMS', 'namaste'), __('Namaste! LMS', 'namaste'), "namaste_manage", "namaste_options", 
@@ -293,7 +293,6 @@ class NamasteLMS {
 		add_shortcode('namaste-next-lesson', array("NamasteLMSShortcodesController", 'next_lesson'));
 		add_shortcode('namaste-prev-lesson', array("NamasteLMSShortcodesController", 'prev_lesson'));
 		add_shortcode('namaste-grade', array("NamasteLMSShortcodesController", 'grade'));
-		add_shortcode('namaste-mark', array("NamasteLMSShortcodesController", 'mark'));
 		
 		// Paypal IPN
 		add_filter('query_vars', array(__CLASS__, "query_vars"));
@@ -365,8 +364,6 @@ class NamasteLMS {
 					else $role->remove_cap('namaste_manage');
 				}	// end if can_manage_options
 			} // end foreach role 
-			
-			update_option('namaste_show_courses_in_blog', @$_POST['show_courses_in_blog']);
 		}
 		
 		if(!empty($_POST['namaste_exam_options']) and check_admin_referer('save_exam_options', 'nonce_exam_options')) {
@@ -414,8 +411,8 @@ class NamasteLMS {
 		$currency = get_option('namaste_currency');
 		$currencies=array('USD'=>'$', "EUR"=>"&euro;", "GBP"=>"&pound;", "JPY"=>"&yen;", "AUD"=>"AUD",
 	   "CAD"=>"CAD", "CHF"=>"CHF", "CZK"=>"CZK", "DKK"=>"DKK", "HKD"=>"HKD", "HUF"=>"HUF",
-	   "ILS"=>"ILS", "INR"=>"INR", "MXN"=>"MXN", "NOK"=>"NOK", "NZD"=>"NZD", "PLN"=>"PLN", "SEK"=>"SEK",
-	   "SGD"=>"SGD", "ZAR"=>"ZAR");		
+	   "ILS"=>"ILS", "MXN"=>"MXN", "NOK"=>"NOK", "NZD"=>"NZD", "PLN"=>"PLN", "SEK"=>"SEK",
+	   "SGD"=>"SGD");		
 	   
 	   $use_grading_system = get_option('namaste_use_grading_system');
 	   $grading_system = stripslashes(get_option('namaste_grading_system'));

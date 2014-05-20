@@ -50,8 +50,8 @@ class NamasteLMSShortcodesController {
    	
    	$enrolled = $wpdb -> get_row($wpdb->prepare("SELECT * FROM ".NAMASTE_STUDENT_COURSES.
 			" WHERE user_id = %d AND course_id = %d", $user_ID, $post->ID));
-	
-		if(empty($enrolled->id)) {			
+			
+		if(empty($enrolled->id)) {
 			$currency = get_option('namaste_currency');
 			$is_manager = current_user_can('namaste_manage');
 			$_course = new NamasteLMSCourseModel();
@@ -238,30 +238,4 @@ class NamasteLMSShortcodesController {
 		if($grade !== '') return $grade;
 		else return @$atts['whenempty'];	
 	}
-	
-	// mark lesson completed
-	static function mark() {
-		global $wpdb, $post, $user_ID;
-		
-		if(!is_user_logged_in()) return "";
-		
-		// is the lesson in progress?
-		$in_progress = $wpdb->get_var($wpdb->prepare("SELECT id FROM ".NAMASTE_STUDENT_LESSONS." 
-			WHERE lesson_id=%d AND student_id=%d AND status!=1", $post->ID, $user_ID));
-		if(!$in_progress) return '';
-		
-		// ready for completion?
-		if(NamasteLMSLessonModel :: is_ready($post->ID, $user_ID, false, true)) {
-			// display button or mark as completed
-			if(!empty($_POST['mark'])) {
-				NamasteLMSLessonModel :: complete($post->ID, $user_ID);		
-				return __('Lesson completed!', 'namaste');
-			}
-			else {
-				return '<form method="post" action="">
-				<p><input type="submit" name="mark" value="'.__('Mark as completed', 'namaste').'"></p>
-				</form>';
-			}
-		}	 
-	} // end mark
 }

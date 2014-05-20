@@ -1,5 +1,5 @@
 <!--Start Sidebar-->
-<!-- <div id="sidebar"> 
+<div id="sidebar">
     <?php if (!dynamic_sidebar('primary-widget-area')) : ?>
         <h2 class="sidebar_title">
             <?php _e('Categories', THEME_SLUG); ?>
@@ -23,5 +23,5 @@
         ?>
         <?php dynamic_sidebar('secondary-widget-area'); ?>
     <?php endif; ?>
-</div>-->
+</div>
 <!--End Sidebar-->

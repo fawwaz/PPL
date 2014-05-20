@@ -2,7 +2,7 @@
 Contributors: prasunsen
 Tags: LMS, learning, courses, lessons, ILE
 Requires at least: 3.3
-Tested up to: 3.9
+Tested up to: 3.8.1
 Stable tag: trunk
 License: GPL2
 
@@ -55,16 +55,12 @@ None yet, please ask in the forum
 
 == Changelog ==
 
-= Version 1.3.6 = 
+= Version 1.3.3 = 
 - Added shhortcode to display student grade on given course (see Gradebook)
 - Links are generated to exams/tests in [namaste-todo] shortcode
 - Allow multiple grades to be used in the "required quiz" for completing a lesson
 - Fixed problem with listing pages on your homepage when Namaste is activated
 - Course access / prerequisites: you can require other courses to be completed before student can enroll in a course
-- Fixed problem with [namaste-enroll] shortcode and the new course pre-requisites
-- Added setting to show / hide courses in blog and home pages (default is off)
-- Added filers for course access to allow other plugins to add conditions
-- Added shortcode to publish a button that lets student mark lesson as completed themselves
 
 = Version 1.3 =
 - The URL slugs "namaste-lesson" and "namaste-course" are now translate-able so you can use your own URL rewrites

@@ -75,6 +75,9 @@ function divusi_course_wpmut_plugin_menu(){
 		echo '<div id="icon-options-general" class="icon32"></div><h2>Konfirmasi pembayaran</h2>';
 		global $current_user;
 		get_currentuserinfo();
+
+
+
 		?>
 		<table class="widefat">
 			<thead>
@@ -875,4 +878,6 @@ function oneTarek_extra_user_profile_fields( $user ){
     </table>
     <?php 
     }
-}?>
+}?><?php
+
+

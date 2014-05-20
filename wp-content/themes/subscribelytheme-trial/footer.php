@@ -35,21 +35,12 @@
             </div>
             <div class="grid_10 omega">
                 <div class="right_bottom_content">
-                    <?php
-                    if (inkthemes_get_option('inkthemes_twitter') || inkthemes_get_option('inkthemes_twitter') || inkthemes_get_option('inkthemes_twitter') || inkthemes_get_option('inkthemes_twitter')) {
-                        $class = 'copyright';
-                    }
-                    ?>
-                    <?php if (inkthemes_get_option('inkthemes_footertext') != '') {
-                        ?>
-                    <p class="<?php echo $class; ?>"><?php echo inkthemes_get_option('inkthemes_footertext'); ?></p>
-                        <?php
-                    } else {
-                        ?>
-                        <p class="<?php echo $class; ?>">2013 &COPY; InkThemes. All rights reserved.</p>
-                        <?php
-                    }
-                    ?>                             
+                   
+						<img src= "/images/divusi-logo.png"></img>
+                        <p class="<?php echo $class; ?>">2014 &COPY; PT LAPI Divusi. All rights reserved.</p>
+                       
+						
+                                               
                 </div>
             </div>
         </div>

@@ -32,8 +32,6 @@ class NamasteLMSCourseModel {
 	
 	// add courses to the homepage and archive listings
 	static function query_post_type($query) {
-		if(!get_option('namaste_show_courses_in_blog')) return $query;
-		
 		if ( (is_home() or is_archive()) and $query->is_main_query() ) {
 			$post_types = @$query->query_vars['post_type'];
 
@@ -234,10 +232,6 @@ class NamasteLMSCourseModel {
 	function enroll($student_id, $course_id, $status) {
 		global $wpdb;
 		
-		// checks from other plugins, for example Namaste PRO
-		$has_access = apply_filters('namaste-course-access', true, $student_id, $course_id);
-		if(!$has_access) wp_die(__('You are not allowed to enroll in this course', 'namaste'));
-		
 		// check for course access requirements
 		$course_access = get_post_meta($course_id, 'namaste_access', true);
 		if(!empty($course_access) and is_array($course_access)) {
@@ -272,15 +266,12 @@ class NamasteLMSCourseModel {
 		$accept_other_payment_methods = $this->accept_other_payment_methods;
 		$accept_paypal = $this->accept_paypal;
 		$accept_stripe = $this->accept_stripe;		
-		$stripe = $this->stripe;
-		
-		// checked for prerequisites
-		list($can_enroll, $enroll_prerequisites) = $this->enroll_prerequisites($course);
+		$stripe = $this->stripe;		
 		
 		// can't enroll?
-		if(empty($can_enroll)) {
-			return $enroll_prerequisites;
-		}			
+		if(!$course->can_enroll) {
+			return $course->enroll_prerequisites;
+		}	
 		
 		$output = '';	
 		if(!empty($course->fee) and !$is_manager) {			
@@ -333,31 +324,4 @@ class NamasteLMSCourseModel {
 			break;
 		}
 	}
-	
-	// check course pre-requisites
-	// returns array($can_enroll, $enroll_prerequisites)
-	function enroll_prerequisites($course) {
-		global $wpdb, $user_ID;
-		// can enroll? or are there unsatisfied pre-requisites
-		$can_enroll = true;		
-		$enroll_prerequisites = '';
-		// check for course access requirements
-		$course_access = get_post_meta($course->post_id, 'namaste_access', true);
-		if(!empty($course_access) and is_array($course_access)) {
-			$enroll_prerequisites = __('These courses should be completed before you can enroll:', 'namaste');
-			
-			// check if there is any unsatisfied requirement
-			foreach($course_access as $required_course) {
-				$is_completed = $wpdb->get_var($wpdb->prepare("SELECT id FROM ".NAMASTE_STUDENT_COURSES."
-					WHERE user_id=%d AND course_id=%d AND status='completed'", $user_ID, $required_course));
-				if(!$is_completed) {
-					$can_enroll = false; // even one failed is enough;
-					$required_course_post = get_post($required_course);
-					$enroll_prerequisites .= ' <b>' . $required_course_post->post_title. '</b>;';
-				}
-			} // end foreach course access
-		}
-		
-		return array($can_enroll, $enroll_prerequisites);
-	} // end enroll_prerequisites()
 }
